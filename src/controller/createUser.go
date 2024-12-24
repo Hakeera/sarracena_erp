@@ -29,10 +29,10 @@ func CreateUser(c *gin.Context) {
 	}
 
 	response := response.UserResponse{
-		Email: userRequest.Email,
-		Password:    "test",
-		Name:  userRequest.Name,
-		Age:   userRequest.Age,
+		Email: 		userRequest.Email,
+		Password:	userRequest.Password,
+		Name: 		userRequest.Name,
+		Age:		userRequest.Age,	
 	}
 	logger.Info("User created successfully",
 		zap.String("journey", "createUser"))
