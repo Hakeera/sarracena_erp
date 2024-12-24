@@ -1,29 +1,41 @@
 package controller
 
 import (
-	"fmt"
+	"net/http"
+
+	logger "sarracena_erp/src/configuration/logs"
 	"sarracena_erp/src/configuration/validation"
 	"sarracena_erp/src/model/request"
+	"sarracena_erp/src/model/response"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func CreateUser(c *gin.Context) {
+	logger.Info("Init CreateUser controller",
+		zap.String("journey", "createUser"),
+	)
 	var userRequest request.UserRequest
 
 	// Vincula o JSON ao struct e verifica se há erros
 	if err := c.ShouldBindJSON(&userRequest); err != nil {
-		restErr := validation.ValidateUserError(err)
-		c.JSON(restErr.Code, restErr)
+		logger.Error("Error trying to validate user info", err,
+			zap.String("journey", "createUser"))
+		errRest := validation.ValidateUserError(err)
+
+		c.JSON(errRest.Code, errRest)
 		return
 	}
 
-	// Exibe o conteúdo do usuário para fins de debug
-	fmt.Println(userRequest)
+	response := response.UserResponse{
+		Email: userRequest.Email,
+		Password:    "test",
+		Name:  userRequest.Name,
+		Age:   userRequest.Age,
+	}
+	logger.Info("User created successfully",
+		zap.String("journey", "createUser"))
 
-	// Retorna sucesso com os dados do usuário recebido
-	c.JSON(201, gin.H{
-		"message": "Usuário criado com sucesso!",
-		"data":    userRequest,
-	})
+	c.JSON(http.StatusOK, response)
 }
