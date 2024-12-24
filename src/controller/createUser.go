@@ -2,7 +2,7 @@ package controller
 
 import (
 	"fmt"
-	"sarracena_erp/src/configuration/rest_err"
+	"sarracena_erp/src/configuration/validation"
 	"sarracena_erp/src/model/request"
 
 	"github.com/gin-gonic/gin"
@@ -13,9 +13,7 @@ func CreateUser(c *gin.Context) {
 
 	// Vincula o JSON ao struct e verifica se há erros
 	if err := c.ShouldBindJSON(&userRequest); err != nil {
-		restErr := rest_err.NewBadRequestError(
-			fmt.Sprintf("Campos incorretos: %v", err.Error()),
-		)
+		restErr := validation.ValidateUserError(err)
 		c.JSON(restErr.Code, restErr)
 		return
 	}
