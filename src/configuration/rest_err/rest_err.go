@@ -28,13 +28,15 @@ func NewRestError(message, err string, code int, causes []Causes) *RestErr {
 }
 
 
-func NewBadRequestError(message string) *RestErr {
+func NewBadRequestError(message, err string, code int, causes []Causes) *RestErr {
 	return &RestErr{
 		Message: message,
-		Err:     "bad request",
-		Code:    http.StatusBadRequest,
+		Err:     err,
+		Code:    code,
+		Causes:  causes,
 	}
 }
+
 
 func NewBadRequestValidationError(message, err string, code int, causes []Causes) *RestErr {
 	return &RestErr{
