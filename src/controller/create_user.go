@@ -5,11 +5,16 @@ import (
 
 	logger "sarracena_erp/src/configuration/logs"
 	"sarracena_erp/src/configuration/validation"
+	"sarracena_erp/src/model"
 	"sarracena_erp/src/model/request"
 	"sarracena_erp/src/model/response"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+)
+
+var (
+	UserDomainInterface model.UserDomainInterface
 )
 
 func CreateUser(c *gin.Context) {
@@ -27,6 +32,21 @@ func CreateUser(c *gin.Context) {
 		c.JSON(errRest.Code, errRest)
 		return
 	}
+
+	domain := model.NewUserDomain(
+		userRequest.Email,
+		userRequest.Password,
+		userRequest.Name,
+		userRequest.Age,
+	)
+	if err := domain.CreateUser(); err != nil {
+		c.JSON(err.Code, err)
+		return
+	}
+
+	logger.Info("User Created Successfully", zap.String("journey", "createUser"))
+
+	c.String(http.StatusOK, "")
 
 	response := response.UserResponse{
 		Email: 		userRequest.Email,
