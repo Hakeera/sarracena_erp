@@ -1,3 +1,4 @@
+// Package validation provides functions and utilities for input validation and error handling.
 package validation
 
 import (
@@ -13,10 +14,14 @@ import (
 )
 
 var (
+	// Validate is the global validator instance for input validation.
 	Validate = validator.New()
-	transl   ut.Translator
+	
+	// transl is the global translator for error messages.
+	transl ut.Translator
 )
 
+// init initializes the validator engine and registers translations.
 func init() {
 	if val, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		en := en.New()
@@ -26,19 +31,21 @@ func init() {
 	}
 }
 
+// ValidateUserError processes and returns a structured error for validation failures.
+// validationErr: The validation error to be processed.
+// Returns a RestErr object containing the validation details.
 func ValidateUserError(validationErr error) *rest_err.RestErr {
 	var jsonErr *json.UnmarshalTypeError
 	var jsonValidationError validator.ValidationErrors
 
-	// Declarar errorsCauses no escopo geral da função
 	errorsCauses := []rest_err.Causes{}
 
-	// Caso de erro de tipo de campo (UnmarshalTypeError)
+	// Handle JSON Unmarshal type errors.
 	if errors.As(validationErr, &jsonErr) {
-		return rest_err.NewBadRequestError("Tipo de Campo Inválido", "invalid field type", 400, nil)
+		return rest_err.NewBadRequestError("Invalid field type", "invalid field type", 400, nil)
 	}
 
-	// Caso de erro de validação do Validator
+	// Handle validation errors from the validator package.
 	if errors.As(validationErr, &jsonValidationError) {
 		for _, e := range validationErr.(validator.ValidationErrors) {
 			cause := rest_err.Causes{
@@ -47,9 +54,9 @@ func ValidateUserError(validationErr error) *rest_err.RestErr {
 			}
 			errorsCauses = append(errorsCauses, cause)
 		}
-		return rest_err.NewBadRequestValidationError("Campos Inválidos", "validation error", 400, errorsCauses)
+		return rest_err.NewBadRequestValidationError("Invalid fields", "validation error", 400, errorsCauses)
 	}
 
-	// Caso genérico
-	return rest_err.NewBadRequestError("Caso Genérico", "Bad Request Error", 400, errorsCauses)
+	// Handle generic errors.
+	return rest_err.NewBadRequestError("Generic case", "Bad Request Error", 400, errorsCauses)
 }

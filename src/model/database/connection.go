@@ -1,3 +1,4 @@
+// Package database handles the connection pool management for PostgreSQL.
 package database
 
 import (
@@ -11,9 +12,11 @@ import (
 
 var dbPool *pgxpool.Pool
 
-// InitDatabase initializes the connection pool to the PostgreSQL database
+// InitDatabase initializes the PostgreSQL connection pool using the connection string
+// provided in the `DATABASE_URL` environment variable. It logs a fatal error if the 
+// connection cannot be established.
 func InitDatabase() {
-	dsn := os.Getenv("DATABASE_URL") // A URL do banco deve estar configurada no .env
+	dsn := os.Getenv("DATABASE_URL")
 	var err error
 
 	dbPool, err = pgxpool.New(context.Background(), dsn)
@@ -24,7 +27,8 @@ func InitDatabase() {
 	fmt.Println("Database connection pool created successfully!")
 }
 
-// GetDB returns the current database pool instance
+// GetDB retrieves the current PostgreSQL connection pool instance.
+// Logs a fatal error if the connection is not initialized.
 func GetDB() *pgxpool.Pool {
 	if dbPool == nil {
 		log.Fatal("Database connection is not initialized")
@@ -32,7 +36,7 @@ func GetDB() *pgxpool.Pool {
 	return dbPool
 }
 
-// CloseDatabase closes the connection pool
+// CloseDatabase closes the PostgreSQL connection pool, releasing all resources.
 func CloseDatabase() {
 	if dbPool != nil {
 		dbPool.Close()

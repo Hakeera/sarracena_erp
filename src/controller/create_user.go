@@ -1,3 +1,4 @@
+// Package controller contains handlers for processing incoming HTTP requests.
 package controller
 
 import (
@@ -14,13 +15,17 @@ import (
 	"go.uber.org/zap"
 )
 
+// CreateUser handles the creation of a new user.
+// It binds the request payload to a UserRequest struct, validates it, and processes the creation.
+// Parameters:
+// - c: The Gin context containing the HTTP request and response.
 func (uc *userControllerInterface) CreateUser(c *gin.Context) {
 	logger.Info("Init CreateUser controller",
 		zap.String("journey", "createUser"),
 	)
 	var userRequest request.UserRequest
 
-	// Vincula o JSON ao struct e verifica se há erros
+	// Bind JSON payload to the UserRequest struct and validate.
 	if err := c.ShouldBindJSON(&userRequest); err != nil {
 		logger.Error("Error trying to validate user info", err,
 			zap.String("journey", "createUser"))
@@ -30,13 +35,15 @@ func (uc *userControllerInterface) CreateUser(c *gin.Context) {
 		return
 	}
 
+	// Create a UserDomain instance from the request data.
 	domain := model.NewUserDomain(
 		userRequest.Email,
 		userRequest.Password,
 		userRequest.Name,
 		userRequest.Age,
 	)
-	
+
+	// Initialize the user service and process user creation.
 	service := service.NewUserDomainService()
 	if err := service.CreateUser(domain); err != nil {
 		c.JSON(err.Code, err)
@@ -46,7 +53,8 @@ func (uc *userControllerInterface) CreateUser(c *gin.Context) {
 	logger.Info("User created successfully",
 		zap.String("journey", "createUser"))
 
-		c.JSON(http.StatusOK, view.ConvertDomainToResponse(
-			domain,
-		))
+	// Respond with the created user's data.
+	c.JSON(http.StatusOK, view.ConvertDomainToResponse(
+		domain,
+	))
 }
