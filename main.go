@@ -2,17 +2,17 @@ package main
 
 import (
 	"log"
+	"sarracena_erp/src/configuration/database"
 	logger "sarracena_erp/src/configuration/logs"
 	"sarracena_erp/src/controller"
 	"sarracena_erp/src/controller/routes"
-	"sarracena_erp/src/model/database"
 	"sarracena_erp/src/model/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
-// main é o ponto de entrada da aplicação. Ele inicializa variáveis de ambiente, 
+// main é o ponto de entrada da aplicação. Ele inicializa variáveis de ambiente,
 // configura a conexão com o banco de dados, instância serviços e controladores,
 // configura rotas HTTP e inicia o servidor na porta 8080.
 func main() {

@@ -13,8 +13,7 @@ import (
 var dbPool *pgxpool.Pool
 
 // InitDatabase initializes the PostgreSQL connection pool using the connection string
-// provided in the `DATABASE_URL` environment variable. It logs a fatal error if the 
-// connection cannot be established.
+// provided in the `DATABASE_URL` environment variable. It logs a fatal error if the connection cannot be established.
 func InitDatabase() {
 	dsn := os.Getenv("DATABASE_URL")
 	var err error
