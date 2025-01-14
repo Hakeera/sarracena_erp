@@ -21,7 +21,9 @@ type UserRepository interface {
 	) (model.UserDomainInterface, *rest_err.RestErr)
 }
 
-// Construtor do repositório
+// NewUserRepository cria uma nova instância do repositório de usuário.
+// Recebe: *pgxpool.Pool como conexão com o banco de dados.
+// Retorna: UserRepository.
 func NewUserRepository(database *pgxpool.Pool) UserRepository {
 	return &userRepository{
 		databaseConnection: database,

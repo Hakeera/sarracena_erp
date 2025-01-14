@@ -3,12 +3,10 @@ package controller
 
 import (
 	"net/http"
-
 	logger "sarracena_erp/src/configuration/logs"
 	"sarracena_erp/src/configuration/validation"
 	"sarracena_erp/src/model"
 	"sarracena_erp/src/model/request"
-	"sarracena_erp/src/model/service"
 	"sarracena_erp/src/view"
 
 	"github.com/gin-gonic/gin"
@@ -43,9 +41,11 @@ func (uc *userControllerInterface) CreateUser(c *gin.Context) {
 		userRequest.Age,
 	)
 
-	// Initialize the user service and process user creation.
-	service := service.NewUserDomainService()
-	if err := service.CreateUser(domain); err != nil {
+	// Não é necessário inicializar o repositório ou o serviço novamente
+	// O serviço já foi instanciado em main.go e passado para o controlador
+
+	// Criar o usuário
+	if err := uc.service.CreateUser(domain); err != nil {
 		c.JSON(err.Code, err)
 		return
 	}

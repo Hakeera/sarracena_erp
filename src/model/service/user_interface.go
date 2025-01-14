@@ -1,31 +1,36 @@
-// Package service defines the interfaces and implementations for user operations.
 package service
 
 import (
 	"sarracena_erp/src/configuration/rest_err"
 	"sarracena_erp/src/model"
+	"sarracena_erp/src/model/repository"
 )
 
-// NewUserDomainService creates a new instance of UserDomainService.
-// Returns: An instance of UserDomainService.
-func NewUserDomainService() UserDomainService {
-	return &userDomainService{}
+// NewUserDomainService cria uma nova instância de UserDomainService.
+// Agora recebe o UserRepository como parâmetro.
+func NewUserDomainService(userRepo repository.UserRepository) UserDomainService {
+	return &userDomainService{
+		userRepo: userRepo, // Armazena o repositório no serviço
+	}
 }
 
-// UserDomainService defines the methods for user-related business logic.
+// UserDomainService define os métodos para a lógica de negócio relacionada a usuários.
 type UserDomainService interface {
-	// CreateUser creates a new user in the system.
+	// CreateUser cria um novo usuário no sistema.
 	CreateUser(model.UserDomainInterface) *rest_err.RestErr
 
-	// UpdateUser updates user information by their ID.
+	// UpdateUser atualiza as informações de um usuário pelo ID.
 	UpdateUser(string, model.UserDomainInterface) *rest_err.RestErr
 
-	// FindUser retrieves a user by their ID.
+	// FindUser recupera um usuário pelo ID.
 	FindUser(string) (*model.UserDomainInterface, *rest_err.RestErr)
 
-	// DeleteUser removes a user from the system by their ID.
+	// DeleteUser remove um usuário do sistema pelo ID.
 	DeleteUser(string) *rest_err.RestErr
 }
 
-// userDomainService is the concrete implementation of UserDomainService.
-type userDomainService struct{}
+// userDomainService é a implementação concreta da interface UserDomainService.
+type userDomainService struct {
+	userRepo repository.UserRepository
+}
+

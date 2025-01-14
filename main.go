@@ -6,31 +6,35 @@ import (
 	logger "sarracena_erp/src/configuration/logs"
 	"sarracena_erp/src/controller"
 	"sarracena_erp/src/controller/routes"
+	"sarracena_erp/src/model/repository"
 	"sarracena_erp/src/model/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
-// main é o ponto de entrada da aplicação. Ele inicializa variáveis de ambiente,
-// configura a conexão com o banco de dados, instância serviços e controladores,
-// configura rotas HTTP e inicia o servidor na porta 8080.
 func main() {
 	logger.Info("About to start user application")
-    
+
 	// Carregar Variáveis de Ambiente
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-    
+
 	// Conexão com Banco de Dados
 	database.InitDatabase()
 	defer database.CloseDatabase()
 
-	// Inicializar Dependências
-	service := service.NewUserDomainService()
-	userController := controller.NewUserControllerInterface(service)
+	// Inicializar Repositório
+	db := database.GetDB()
+	userRepo := repository.NewUserRepository(db)
+
+	// Inicializar Serviço
+	userService := service.NewUserDomainService(userRepo)
+
+	// Inicializar Controlador
+	userController := controller.NewUserControllerInterface(userService)
 
 	// Configurar Roteador
 	router := gin.Default()
